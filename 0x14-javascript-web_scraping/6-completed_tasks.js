@@ -1,15 +1,22 @@
-
 #!/usr/bin/node
 const request = require('request');
-const url = process.argv[2];
+const url = process.argv.slice(2);
+request(url[0], (err, response, body) => {
+  if (err) {
+    console.log('No_0');
+  }
+  const dates = JSON.parse(body);
+  const userIdCounts = {};
 
-request(url, { json: true }, (err, res, body) => {
-  if (err) console.log(err);
-  const results = {};
-  for (const task of body) {
-    if (task.completed) {
-      results[task.userId] = (results[task.userId] || 0) + 1;
+  for (const date of dates) {
+    if (date.completed === true) {
+      const userId = date.userId;
+      if (userId in userIdCounts) {
+        userIdCounts[userId]++;
+      } else {
+        userIdCounts[userId] = 1;
+      }
     }
   }
-  console.log(results);
+  console.log(userIdCounts);
 });
